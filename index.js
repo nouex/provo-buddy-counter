@@ -31,7 +31,7 @@ if (process.env.NODE_ENV === "dev") {
   const privateKey = fs.readFileSync( '/etc/letsencrypt/live/provobuddy.com/privkey.pem' );
   const certificate = fs.readFileSync( '/etc/letsencrypt/live/provobuddy.com/cert.pem' );
 
-  https.createServer({
+  require("https").createServer({
       key: privateKey,
       cert: certificate
   }, app).listen(port, () => {
