@@ -4,6 +4,7 @@ const port = 3000
 const admin = require("firebase-admin");
 const morgan = require('morgan')
 const cors = require("cors");
+const fs = require("fs");
 
 const serviceAccountSnapshot = require("./service-account.json");
 admin.initializeApp({
@@ -22,6 +23,18 @@ app.get('/', (req, res) => {
 
 app.use("/counter", counter)
 
-app.listen(port, () => {
-  console.log(`Example app listening at http://localhost:${port}`)
-})
+if (process.env.NODE_ENV === "dev") {
+  app.listen(port, () => {
+    console.log(`Listening at http://localhost:${port}`)
+  })
+} else {
+  const privateKey = fs.readFileSync( '/etc/letsencrypt/live/provobuddy.com/privkey.pem' );
+  const certificate = fs.readFileSync( '/etc/letsencrypt/live/provobuddy.com/cert.pem' );
+
+  https.createServer({
+      key: privateKey,
+      cert: certificate
+  }, app).listen(port, () => {
+    console.log(`App listening on ${port}`)
+  })
+}
